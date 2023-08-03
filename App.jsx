@@ -30,19 +30,19 @@ const App = () => {
     }
   }, []);
 
-  const startReader = useCallback(async () => {
-    if (!readerRunning) {
-      await ZebraScanner.startReader();
-      setReaderRunning(true);
-    }
-  }, [readerRunning]);
+  const startReader = useCallback(() => {
 
-  const stopReader = useCallback(async () => {
-    if (readerRunning) {
-      await ZebraScanner.stopReader();
-      setReaderRunning(false);
-    }
-  }, [readerRunning]);
+    ZebraScanner.startReader();
+
+  }
+  )
+
+  const stopReader = useCallback(() => {
+
+    ZebraScanner.stopReader();
+
+  }
+  );
 
   return (
     <View style={styles.container}>

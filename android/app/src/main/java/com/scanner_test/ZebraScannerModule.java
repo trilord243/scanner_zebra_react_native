@@ -39,6 +39,8 @@ public class ZebraScannerModule extends ReactContextBaseJavaModule implements EM
 
     // Debugging
     private static final boolean D = true;
+    private boolean isReading = false;
+
 
     // React native...
     private ReactApplicationContext mReactContext;
@@ -179,21 +181,26 @@ public class ZebraScannerModule extends ReactContextBaseJavaModule implements EM
     /*******************************/
     @ReactMethod
     public void startReader(final Promise promise) {
+        Log.d("debbuf","Start");
         updateStatus("EMDK open success!");
         this.emdkManager = emdkManager;
         // Acquire the barcode manager resources
         initBarcodeManager();
         // Enumerate scanner devices
         enumerateScannerDevices();
+        this.isReading = true;
+
         promise.resolve(true);
     }
 
     @ReactMethod
     public void stopReader(Promise promise) {
+        Log.d("debbuf","Stop");
         // The application is in background
         // Release the barcode manager resources
         deInitScanner();
         deInitBarcodeManager();
+        this.isReading = false;
 
         promise.resolve(null);
     }
@@ -280,7 +287,7 @@ public class ZebraScannerModule extends ReactContextBaseJavaModule implements EM
                 // set trigger type
                 scanner.triggerType = Scanner.TriggerType.HARD;
                 // submit read
-                if (!scanner.isReadPending() && !bExtScannerDisconnected) {
+                if (isReading && !scanner.isReadPending() && !bExtScannerDisconnected) {
                     try {
                         scanner.read();
                     } catch (ScannerException e) {
@@ -308,6 +315,7 @@ public class ZebraScannerModule extends ReactContextBaseJavaModule implements EM
                 break;
         }
     }
+
 
     private void updateStatus(final String status) {
         if (D) Log.d("TAG", "ZEBRASCANNER - Status: " + status);
